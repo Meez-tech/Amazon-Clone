@@ -1,0 +1,4 @@
+/*Avoid React default Margin*/
+* {
+  margin: 0;
+}
