@@ -1,11 +1,42 @@
 import "./App.css";
-import React from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Header from "./Components/Header";
 import Home from "./Components/Home";
 import CheckOut from "./Components/CheckOut";
+import Login from "./Components/Login";
+import { useStateValue } from "./Components/StateProvider";
+import { auth } from "./Components/firebase";
 
 function App() {
+  const [{ user }, dispatch] = useStateValue();
+
+  //Code to run based on a condition
+  //useEffect HOOK (VIP)
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((authUser) => {
+      if (authUser) {
+        //user is logged in
+        dispatch({
+          type: "SET_USER",
+          user: authUser,
+        });
+      } else {
+        //user is logged out
+        dispatch({
+          type: "SET_USER",
+          user: null,
+        });
+      }
+    });
+    return () => {
+      //cleanup operation
+      unsubscribe();
+    };
+  }, []);
+
+  console.log("USER IS ====> ", user);
   return (
     <Router>
       <div className="app">
@@ -15,7 +46,7 @@ function App() {
             <CheckOut />
           </Route>
           <Route path="/login">
-            <h1>Login</h1>
+            <Login />
           </Route>
           {/* Default route */}
           <Route path="/">
